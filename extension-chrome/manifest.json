@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "VLESS Switch",
+  "version": "1.0.0",
+  "description": "Переключение сайтов через локальный VLESS(Reality)-прокси (Xray-core), по образцу Browsec.",
+  "icons": {
+    "48": "icons/icon48.png",
+    "96": "icons/icon96.png"
+  },
+  "permissions": [
+    "proxy",
+    "storage",
+    "tabs",
+    "nativeMessaging"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icons/icon48.png",
+      "96": "icons/icon96.png"
+    }
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqnIG9Q0i1DSiRyUREI65eMghcTOh2V4YYUvy4lg3DzrTae6pv6gSSVvrxhAzpANCx4QlQVPotUOpnq5Y5JcG17qV10EU5tp/cmIvjqVSPdJ8YE6S/F6HdMMR5V4I4/iS/ZcwZQiAQXHfBCrkDRdbRM3ZDZgwH4DzVYbxesKNBaa1CzUKuYa+wtRlEfHYAqRWPRnpf5hm38l7A2DqCDHKcSMHFpa/v8+7id01DJfgu/S+oCqsstlOSkZdVS01jNtOnI52tkXsnDNcR4e7RxW0Tz6HrHoVi71ip6Klhb27e8LO0NrtBhPgBOzT5+Ow8dIR/RPWh08HAtTCyWQrc7YPRwIDAQAB"
+}

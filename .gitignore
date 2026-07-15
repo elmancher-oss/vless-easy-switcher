@@ -1,0 +1,9 @@
+config.json
+**/config.json
+*.log
+native-host/**/xray*
+native-host/**/xray-core*
+native-host/windows/python-embed/*
+!native-host/windows/python-embed/.gitkeep
+.DS_Store
+Thumbs.db

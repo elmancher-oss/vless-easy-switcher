@@ -1,0 +1,36 @@
+{
+  "manifest_version": 2,
+  "name": "VLESS Switch",
+  "version": "1.0.0",
+  "description": "Переключение сайтов через локальный VLESS(Reality)-прокси (Xray-core), по образцу Browsec.",
+  "icons": {
+    "48": "icons/icon48.png",
+    "96": "icons/icon96.png"
+  },
+  "permissions": [
+    "proxy",
+    "storage",
+    "tabs",
+    "nativeMessaging",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icons/icon48.png",
+      "96": "icons/icon96.png"
+    }
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "vless-switch@boris.local",
+      "strict_min_version": "91.1.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  }
+}

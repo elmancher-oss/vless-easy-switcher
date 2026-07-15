@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<style>
+  :root {
+    --bg: #16181c;
+    --bg-card: #1e2126;
+    --bg-input: #14161a;
+    --border: #2b2f36;
+    --text: #e8e8e8;
+    --text-dim: #9aa0a6;
+    --text-faint: #6d7278;
+    --accent: #2f6feb;
+    --green: #4caf50;
+    --red: #e05555;
+  }
+  * { box-sizing: border-box; }
+  body {
+    width: 340px;
+    height: 480px;
+    margin: 0;
+    font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #101215;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .topbar .title {
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--text-faint);
+    flex-shrink: 0;
+  }
+  .dot.on { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .dot.off { background: var(--red); }
+
+  .switch { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+  .switch input { display: none; }
+  .slider {
+    position: absolute; inset: 0;
+    background: #3a3f47;
+    border-radius: 22px;
+    transition: .2s;
+    cursor: pointer;
+  }
+  .slider:before {
+    content: "";
+    position: absolute;
+    width: 16px; height: 16px;
+    left: 3px; top: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: .2s;
+  }
+  input:checked + .slider { background: var(--green); }
+  input:checked + .slider:before { transform: translateX(18px); }
+
+  .views {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px;
+  }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  .status-card {
+    text-align: center;
+    padding: 18px 10px 14px;
+    background: var(--bg-card);
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+  .status-text { font-size: 16px; font-weight: 600; margin: 4px 0 2px; }
+  .status-text.on { color: var(--green); }
+  .status-text.off { color: var(--text-dim); }
+  .status-sub { font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+
+  .mode-card {
+    background: var(--bg-card);
+    border-radius: 10px;
+    padding: 4px;
+    display: flex;
+    margin-bottom: 12px;
+  }
+  .mode-btn {
+    flex: 1;
+    text-align: center;
+    padding: 8px 4px;
+    font-size: 12px;
+    color: var(--text-dim);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+  }
+  .mode-btn.active { background: var(--accent); color: white; }
+
+  .menu-list { display: flex; flex-direction: column; gap: 8px; }
+  .menu-item {
+    background: var(--bg-card);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .menu-item:hover { background: #252932; }
+  .menu-item .mi-left { display: flex; align-items: center; gap: 10px; }
+  .menu-item .mi-icon {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: #2b2f36;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .menu-item .mi-title { font-size: 13px; font-weight: 500; }
+  .menu-item .mi-sub { font-size: 11px; color: var(--text-faint); margin-top: 1px; }
+  .menu-item .mi-arrow { color: var(--text-faint); font-size: 14px; }
+
+  .subview-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .back-btn {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: var(--bg-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+  .back-btn:hover { background: #2b2f36; color: var(--text); }
+  .subview-title { font-size: 14px; font-weight: 600; }
+
+  .add-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-card);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    gap: 8px;
+  }
+  .add-row .site-name {
+    font-size: 12px;
+    color: var(--text-dim);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 7px;
+    padding: 6px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .btn-primary:disabled { background: #3a3f47; cursor: default; }
+  .btn-secondary {
+    background: #2b2f36;
+    color: var(--text-dim);
+    border: none;
+    border-radius: 7px;
+    padding: 6px 10px;
+    font-size: 11px;
+    cursor: pointer;
+  }
+
+  .item-list { list-style: none; margin: 0; padding: 0; }
+  .item-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    font-size: 12px;
+  }
+  .item-list li .item-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text);
+  }
+  .item-list li.active .item-name { color: var(--green); font-weight: 600; }
+  .item-del {
+    color: var(--red);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 2px 4px;
+    flex-shrink: 0;
+  }
+  .empty-hint {
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 12px;
+    padding: 24px 10px;
+    line-height: 1.6;
+  }
+
+  .cfg-input-row { display: flex; gap: 6px; margin-bottom: 10px; }
+  #vlessInput {
+    flex: 1;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 11px;
+    padding: 8px;
+    resize: none;
+    height: 44px;
+    font-family: Consolas, monospace;
+  }
+  .cfg-error {
+    color: var(--red);
+    font-size: 11px;
+    margin: -4px 0 8px;
+    display: none;
+  }
+  .port-card {
+    background: var(--bg-card);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  #portInput {
+    width: 64px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 12px;
+    padding: 5px 6px;
+  }
+  #portMsg { font-size: 11px; color: var(--green); display: none; margin-left: auto; }
+
+  #logList { font-family: Consolas, monospace; }
+  #logList li {
+    display: block;
+    font-size: 11px;
+    color: #b6bcc2;
+    background: transparent;
+    border-bottom: 1px solid #24272d;
+    border-radius: 0;
+    padding: 5px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #logList li .t { color: var(--text-faint); margin-right: 6px; }
+  #logList li .proxy { color: var(--green); }
+  #logList li .direct { color: var(--text-dim); }
+  #logList li .error { color: var(--red); }
+  .log-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+  .bottom-nav {
+    display: flex;
+    border-top: 1px solid var(--border);
+    background: #101215;
+    flex-shrink: 0;
+  }
+  .nav-btn {
+    flex: 1;
+    text-align: center;
+    padding: 9px 4px 8px;
+    cursor: pointer;
+    color: var(--text-faint);
+    font-size: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    transition: color .15s;
+  }
+  .nav-btn .nav-icon { font-size: 16px; }
+  .nav-btn.active { color: var(--accent); }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="title">
+      <span class="dot" id="statusDot"></span>
+      <span>VLESS Switch</span>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="enabledToggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="views">
+
+    <div class="view active" id="view-home">
+      <div class="status-card">
+        <div class="status-text" id="statusText">-</div>
+        <div class="status-sub" id="nativeStatus">Xray: -</div>
+        <div class="status-sub" id="statusSub">127.0.0.1</div>
+      </div>
+
+      <div class="mode-card">
+        <div class="mode-btn" id="modeSelectiveBtn">Выбранные сайты</div>
+        <div class="mode-btn" id="modeAllBtn">Все сайты</div>
+      </div>
+
+      <div class="menu-list">
+        <div class="menu-item" data-nav="sites">
+          <div class="mi-left">
+            <div class="mi-icon">&#127760;</div>
+            <div>
+              <div class="mi-title">Сайты</div>
+              <div class="mi-sub" id="sitesSummary">Нет правил</div>
+            </div>
+          </div>
+          <span class="mi-arrow">&#8250;</span>
+        </div>
+
+        <div class="menu-item" data-nav="configs">
+          <div class="mi-left">
+            <div class="mi-icon">&#128273;</div>
+            <div>
+              <div class="mi-title">VLESS конфиги</div>
+              <div class="mi-sub" id="configsSummary">Не добавлено</div>
+            </div>
+          </div>
+          <span class="mi-arrow">&#8250;</span>
+        </div>
+
+        <div class="menu-item" data-nav="log">
+          <div class="mi-left">
+            <div class="mi-icon">&#128203;</div>
+            <div>
+              <div class="mi-title">Журнал событий</div>
+              <div class="mi-sub">Диагностика и логи</div>
+            </div>
+          </div>
+          <span class="mi-arrow">&#8250;</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="view-sites">
+      <div class="subview-header">
+        <div class="back-btn" data-back>&#8249;</div>
+        <div class="subview-title">Сайты</div>
+      </div>
+
+      <div class="add-row">
+        <span class="site-name" id="currentDomain">-</span>
+        <button class="btn-primary" id="addCurrent">Добавить</button>
+      </div>
+
+      <ul class="item-list" id="rules"></ul>
+      <div class="empty-hint" id="emptyRulesMsg" style="display:none;">
+        Правил пока нет - добавь текущий сайт кнопкой выше,<br>или включи режим «Все сайты» на главном экране.
+      </div>
+    </div>
+
+    <div class="view" id="view-configs">
+      <div class="subview-header">
+        <div class="back-btn" data-back>&#8249;</div>
+        <div class="subview-title">VLESS конфиги</div>
+      </div>
+
+      <div class="cfg-input-row">
+        <textarea id="vlessInput" placeholder="Вставь vless://..."></textarea>
+        <button class="btn-primary" id="addConfigBtn">Добавить</button>
+      </div>
+      <div class="cfg-error" id="cfgError"></div>
+
+      <ul class="item-list" id="configList"></ul>
+      <div class="empty-hint" id="emptyConfigsMsg" style="display:none;">
+        Конфигов пока нет - вставь ссылку vless:// выше.
+      </div>
+
+      <div class="port-card">
+        <span>Порт SOCKS5</span>
+        <input type="number" id="portInput" min="1" max="65535" placeholder="1080">
+        <button class="btn-secondary" id="savePortBtn">Сохранить</button>
+        <span id="portMsg">Применено</span>
+      </div>
+    </div>
+
+    <div class="view" id="view-log">
+      <div class="subview-header">
+        <div class="back-btn" data-back>&#8249;</div>
+        <div class="subview-title">Журнал событий</div>
+      </div>
+
+      <ul class="item-list" id="logList"></ul>
+      <div class="log-actions">
+        <button class="btn-secondary" id="refreshLogs">Обновить</button>
+        <button class="btn-secondary" id="clearLogs">Очистить</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="bottom-nav">
+    <div class="nav-btn active" data-nav="home"><span class="nav-icon">&#127968;</span>Главная</div>
+    <div class="nav-btn" data-nav="sites"><span class="nav-icon">&#127760;</span>Сайты</div>
+    <div class="nav-btn" data-nav="configs"><span class="nav-icon">&#128273;</span>Конфиги</div>
+    <div class="nav-btn" data-nav="log"><span class="nav-icon">&#128203;</span>Журнал</div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
